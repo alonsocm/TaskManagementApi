@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using TaskManagementApi.Application.DTOs;
 using TaskManagementApi.Application.Services;
-using TaskManagementApi.Core.Entities.TaskManagementApi.Core.Entities;
 
 namespace TaskManagementApi.API.Controllers
 {
@@ -16,10 +16,15 @@ namespace TaskManagementApi.API.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateTask([FromBody] TaskItem task)
+        public async Task<IActionResult> CreateTask([FromBody] TaskDto task)
         {
-            await _taskService.CreateTaskAsync(task);
-            return CreatedAtAction(nameof(GetTaskById), new { id = task.Id }, task);
+            if (string.IsNullOrWhiteSpace(task.Title))
+            {
+                return BadRequest("Title is required.");
+            }
+
+            var newTask = await _taskService.CreateTaskAsync(task);
+            return CreatedAtAction(nameof(GetTaskById), new { id = newTask.Id }, newTask);
         }
 
         [HttpGet]
@@ -33,30 +38,40 @@ namespace TaskManagementApi.API.Controllers
         public async Task<IActionResult> GetTaskById(Guid id)
         {
             var task = await _taskService.GetTaskByIdAsync(id);
+
             if (task == null)
             {
                 return NotFound();
             }
+
             return Ok(task);
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateTask(Guid id, [FromBody] TaskItem task)
+        public async Task<IActionResult> UpdateTask(Guid id, [FromBody] TaskUpdateDto task)
         {
             if (id != task.Id)
             {
                 return BadRequest();
             }
 
-            await _taskService.UpdateTaskAsync(task);
-            return NoContent();
+            if (await _taskService.UpdateTaskAsync(task))
+            {
+                return NoContent();
+            }
+
+            return BadRequest("Task not found");
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteTask(Guid id)
         {
-            await _taskService.DeleteTaskAsync(id);
-            return NoContent();
+            if (await _taskService.DeleteTaskAsync(id))
+            {
+                return NoContent();
+            }
+
+            return BadRequest("Task not found");
         }
 
         [HttpGet("report")]

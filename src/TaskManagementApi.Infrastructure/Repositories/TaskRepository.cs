@@ -39,11 +39,14 @@ namespace TaskManagementApi.Infrastructure.Repositories
         public async Task DeleteAsync(Guid id)
         {
             var task = await _context.TaskItems.FindAsync(id);
-            if (task != null)
+
+            if (task == null)
             {
-                _context.TaskItems.Remove(task);
-                await _context.SaveChangesAsync();
+                throw new ArgumentException("Task not found.");
             }
+
+            _context.TaskItems.Remove(task);
+            await _context.SaveChangesAsync();
         }
     }
 }

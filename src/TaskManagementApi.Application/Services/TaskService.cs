@@ -23,19 +23,52 @@ namespace TaskManagementApi.Application.Services
             return await _repository.GetByIdAsync(id);
         }
 
-        public async Task CreateTaskAsync(TaskItem task)
+        public async Task<TaskItem> CreateTaskAsync(TaskDto task)
         {
-            await _repository.AddAsync(task);
+            var newTask = new TaskItem
+            {
+                Id = Guid.NewGuid(),
+                Title = task.Title,
+                Description = task.Description,
+                Priority = task.Priority,
+                Status = task.Status,
+                CreatedAt = DateTime.Now,
+                UpdatedAt = DateTime.Now
+            };
+            await _repository.AddAsync(newTask);
+            return newTask;
         }
 
-        public async Task UpdateTaskAsync(TaskItem task)
+        public async Task<bool> UpdateTaskAsync(TaskUpdateDto task)
         {
-            await _repository.UpdateAsync(task);
+            var taskDB = await GetTaskByIdAsync(task.Id);
+
+            if (taskDB == null)
+            {
+                return false;
+            }
+
+            taskDB.Title = task.Title;
+            taskDB.Description = task.Description;
+            taskDB.Priority = task.Priority;
+            taskDB.Status = task.Status;
+            taskDB.UpdatedAt = DateTime.Now;
+
+            await _repository.UpdateAsync(taskDB);
+            return true;
         }
 
-        public async Task DeleteTaskAsync(Guid id)
+        public async Task<bool> DeleteTaskAsync(Guid id)
         {
+            var taskDB = await GetTaskByIdAsync(id);
+
+            if (taskDB == null)
+            {
+                return false;
+            }
+
             await _repository.DeleteAsync(id);
+            return true;
         }
 
         public async Task<ReportDto> GenerateReportAsync()
