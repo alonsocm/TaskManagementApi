@@ -9,5 +9,5 @@
   <b>cd .\src\TaskManagementApi.API\</b>
 <p>4. Ejecutar el proyecto con el siguiente comando:</p> 
   <b>dotnet run</b>
-<p>5. Mediante Swagger se pueden visualizar los endpoint existentes:</p>
+<p>5. Mediante Swagger, se pueden visualizar los endpoints existentes:</p>
   <b>Ejemplo: https://localhost:7240/swagger/index.html</b>
