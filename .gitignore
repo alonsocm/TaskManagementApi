@@ -396,3 +396,6 @@ FodyWeavers.xsd
 
 # JetBrains Rider
 *.sln.iml
+/src/TaskManagementApi.Infrastructure/Data/tasks.db
+/src/TaskManagementApi.Infrastructure/Data/tasks.db-shm
+/src/TaskManagementApi.Infrastructure/Data/tasks.db-wal
